@@ -48,13 +48,13 @@ let client: any = null
 async function ensureConnected() {
   if (!client) {
     const options: ConnectOptions = {
-      email: process.env.HULY_EMAIL || 'denis@goremi.co.uk',
-      password: process.env.HULY_PASSWORD || '4RkrpCzGrwjwbnqfiD4BYce8CNxD',
-      workspace: process.env.HULY_WORKSPACE || 'remi',
+      email: process.env.HULY_EMAIL!,
+      password: process.env.HULY_PASSWORD!,
+      workspace: process.env.HULY_WORKSPACE!,
       socketFactory: NodeWebSocketFactory,
       connectionTimeout: 30000
     }
-    client = await connect(process.env.HULY_URL || 'https://citadel.remi.casa', options)
+    client = await connect(process.env.HULY_URL!, options)
   }
   return client
 }

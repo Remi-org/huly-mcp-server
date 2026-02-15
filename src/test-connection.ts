@@ -2,10 +2,10 @@ import { HulyClient } from './huly-client.js'
 
 async function testConnection() {
   const client = new HulyClient({
-    url: process.env.HULY_URL || 'https://citadel.remi.casa',
-    email: process.env.HULY_EMAIL || 'denis@goremi.co.uk',
-    password: process.env.HULY_PASSWORD || '4RkrpCzGrwjwbnqfiD4BYce8CNxD',
-    workspace: process.env.HULY_WORKSPACE || 'remi'
+    url: process.env.HULY_URL!,
+    email: process.env.HULY_EMAIL!,
+    password: process.env.HULY_PASSWORD!,
+    workspace: process.env.HULY_WORKSPACE!
   })
 
   try {

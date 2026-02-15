@@ -25,10 +25,10 @@ let hulyClient: HulyClient | null = null
 async function ensureConnected(): Promise<HulyClient> {
   if (!hulyClient) {
     hulyClient = new HulyClient({
-      url: process.env.HULY_URL || 'https://citadel.remi.casa',
-      email: process.env.HULY_EMAIL || '',
-      password: process.env.HULY_PASSWORD || '',
-      workspace: process.env.HULY_WORKSPACE || 'remi',
+      url: process.env.HULY_URL!,
+      email: process.env.HULY_EMAIL!,
+      password: process.env.HULY_PASSWORD!,
+      workspace: process.env.HULY_WORKSPACE!,
     })
     await hulyClient.connect()
   }
