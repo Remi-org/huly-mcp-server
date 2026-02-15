@@ -1,10 +1,12 @@
 import { z } from 'zod'
 import tracker, { IssuePriority } from '@hcengineering/tracker'
-import core, { generateId } from '@hcengineering/core'
+import core, { generateId, Ref, Class, Doc } from '@hcengineering/core'
 import { makeRank } from '@hcengineering/rank'
 import { NotFoundError } from '../errors'
 import { errorResponse, successResponse, type ToolResponse } from '../error-handler'
 import type { ToolDefinition, ToolHandler } from '../types'
+
+const COMMENT_CLASS = 'chunter:class:ChatMessage' as Ref<Class<Doc>>
 
 const priorityMap: Record<string, number> = {
   Urgent: IssuePriority.Urgent,
@@ -292,11 +294,11 @@ const addComment: ToolHandler = async (client, args) => {
 
   const commentId = generateId()
   const commentMarkup = await client.uploadMarkup(
-    tracker.class.Comment, commentId, 'message', input.comment, 'markdown'
+    COMMENT_CLASS, commentId, 'message', input.comment, 'markdown'
   )
 
   await client.addCollection(
-    tracker.class.Comment, issue.space, input.issueId, tracker.class.Issue, 'comments',
+    COMMENT_CLASS, issue.space, input.issueId, tracker.class.Issue, 'comments',
     { message: commentMarkup },
     commentId
   )
