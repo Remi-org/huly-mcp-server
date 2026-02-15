@@ -1,16 +1,17 @@
 {
   "name": "huly-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server for Huly",
+  "description": "MCP server for Huly workspace management",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --noEmit false || true",
-    "dev": "NODE_PATH=../node_modules ../node_modules/tsx/dist/cli.mjs src/test-connection.ts",
-    "start": "NODE_PATH=../node_modules ../node_modules/tsx/dist/cli.mjs src/index.ts",
-    "test-connection": "NODE_PATH=../node_modules ../node_modules/tsx/dist/cli.mjs src/test-connection.ts"
+    "build": "tsc",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
   },
-  "keywords": [],
-  "author": "",
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": ["mcp", "huly"],
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
