@@ -1,79 +1,109 @@
-# Huly MCP Server
+# huly-mcp-server
 
-MCP server that exposes Huly workspace data to AI agents like Claude.
+MCP server for Huly workspace management. Exposes Huly's project management, documents, cards, and attachments through the [Model Context Protocol](https://modelcontextprotocol.io/).
 
-## Features
+## Requirements
 
-- `list_projects` - List all projects in the workspace
-- `list_issues` - List issues with optional filters (projectId, status, assignee)
-- `get_issue` - Get details of a specific issue by ID
+- Node.js >= 20
+- pnpm
+- A running Huly instance with API access
 
 ## Setup
 
 ```bash
 pnpm install
+cp .env.example .env
+# Edit .env with your Huly credentials
 ```
 
-## Testing
+## Configuration
 
-### 1. Test with MCP Inspector
+| Variable | Description |
+|---|---|
+| `HULY_URL` | Huly instance URL (e.g. `https://huly.example.com`) |
+| `HULY_EMAIL` | Account email |
+| `HULY_PASSWORD` | Account password |
+| `HULY_WORKSPACE` | Workspace identifier |
+| `LOG_LEVEL` | Logging level: `debug`, `info`, `warn`, `error` (default: `info`) |
+
+## Running
 
 ```bash
-npx @modelcontextprotocol/inspector tsx src/index.ts
+pnpm start
 ```
 
-This will open a web UI at `http://localhost:6274` where you can:
-- See all available tools
-- Execute tools interactively
-- View responses
+### Docker
 
-### 2. Test with Claude Desktop
+```bash
+docker build -t huly-mcp-server .
+docker run --env-file .env huly-mcp-server
+```
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "huly": {
-      "command": "tsx",
-      "args": ["/Users/denissellu/src/remi/huly-mcp-server/src/index.ts"],
+      "command": "npx",
+      "args": ["tsx", "src/index.ts"],
+      "cwd": "/path/to/huly-mcp-server",
       "env": {
-        "HULY_URL": "https://citadel.remi.casa",
-        "HULY_EMAIL": "your-email@goremi.co.uk",
+        "HULY_URL": "https://huly.example.com",
+        "HULY_EMAIL": "your-email@example.com",
         "HULY_PASSWORD": "your-password",
-        "HULY_WORKSPACE": "remi"
+        "HULY_WORKSPACE": "your-workspace"
       }
     }
   }
 }
 ```
 
-Restart Claude Desktop completely (not just close window), then try:
-- "List my Huly projects"
-- "Show me all issues"
-- "What issues are in the REM project?"
+## Available Tools
 
-## Current Status
+### Issues & Projects
+- `list_projects` - List all projects
+- `list_issues` - List issues with optional filters (project, status, assignee)
+- `get_issue` - Get full issue details with description
+- `create_issue` - Create a new issue
+- `update_issue` - Update an existing issue
+- `add_comment` - Add a comment to an issue
+- `search_issues` - Search issues by text query
 
-- ✅ MCP server structure complete
-- ✅ Three tools implemented (list_projects, list_issues, get_issue)
-- ✅ Tested with MCP Inspector
-- ⚠️ Currently using mock data
-- ❌ Real Huly connection pending (version mismatch issue with npm packages)
+### Organization
+- `list_statuses` - List issue statuses for a project
+- `list_components` - List project components
+- `list_milestones` - List project milestones
 
-## Next Steps
+### Cards
+- `list_card_spaces` - List all card spaces
+- `list_cards` - List cards with optional space filter
+- `get_card` - Get full card details
+- `create_card` - Create a new card
+- `update_card` - Update a card
+- `delete_card` - Delete a card
 
-To connect to real Huly instance, need to resolve package version issue:
-- Parent project uses @hcengineering packages v0.6.500 (from platform monorepo)
-- NPM only has v0.7.x which is incompatible with citadel.remi.casa
-- Options: link to parent packages or update Huly instance
+### Documents
+- `list_teamspaces` - List all teamspaces
+- `list_documents` - List documents with optional teamspace filter
+- `get_document` - Get full document with content
+- `create_document` - Create a new document
+- `update_document` - Update a document
+- `delete_document` - Delete a document
 
-## Development
+### Attachments
+- `list_attachments` - List attachments on an issue or card
+- `delete_attachment` - Delete an attachment
+
+## Testing
 
 ```bash
-# Start with mock data
-pnpm start
-
-# Test connection (when real client is ready)
-pnpm test-connection
+pnpm test
+pnpm test:coverage
 ```
+
+## License
+
+ISC
