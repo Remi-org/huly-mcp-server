@@ -108,6 +108,116 @@ export const definitions: ToolDefinition[] = [
       required: ['query'],
     },
   },
+  {
+    name: 'delete_issue',
+    description: 'Delete an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issueId: { type: 'string', description: 'Issue ID to delete' },
+      },
+      required: ['issueId'],
+    },
+  },
+  {
+    name: 'add_issue_label',
+    description: 'Add a label to an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issueId: { type: 'string', description: 'Issue ID' },
+        label: { type: 'string', description: 'Label name' },
+        color: { type: 'number', description: 'Label color (optional)' },
+      },
+      required: ['issueId', 'label'],
+    },
+  },
+  {
+    name: 'list_issue_templates',
+    description: 'List issue templates in a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        projectId: { type: 'string', description: 'Filter by project ID (optional)' },
+      },
+    },
+  },
+  {
+    name: 'get_issue_template',
+    description: 'Get details of an issue template',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        templateId: { type: 'string', description: 'Template ID to retrieve' },
+      },
+      required: ['templateId'],
+    },
+  },
+  {
+    name: 'create_issue_template',
+    description: 'Create a new issue template in a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        projectId: { type: 'string', description: 'Project ID' },
+        title: { type: 'string', description: 'Template title' },
+        description: { type: 'string', description: 'Template description (optional)' },
+        priority: {
+          type: 'string',
+          description: 'Default priority',
+          enum: ['Urgent', 'High', 'Medium', 'Low', 'NoPriority'],
+        },
+        assignee: { type: 'string', description: 'Default assignee (optional)' },
+        component: { type: 'string', description: 'Default component (optional)' },
+        milestone: { type: 'string', description: 'Default milestone (optional)' },
+      },
+      required: ['projectId', 'title'],
+    },
+  },
+  {
+    name: 'update_issue_template',
+    description: 'Update an existing issue template',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        templateId: { type: 'string', description: 'Template ID to update' },
+        title: { type: 'string', description: 'New title (optional)' },
+        description: { type: 'string', description: 'New description (optional)' },
+        priority: { type: 'string', description: 'New priority (optional)' },
+        assignee: { type: 'string', description: 'New assignee (optional)' },
+        component: { type: 'string', description: 'New component (optional)' },
+        milestone: { type: 'string', description: 'New milestone (optional)' },
+      },
+      required: ['templateId'],
+    },
+  },
+  {
+    name: 'delete_issue_template',
+    description: 'Delete an issue template',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        templateId: { type: 'string', description: 'Template ID to delete' },
+      },
+      required: ['templateId'],
+    },
+  },
+  {
+    name: 'create_issue_from_template',
+    description: 'Create an issue using a template as defaults',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        templateId: { type: 'string', description: 'Template ID to use' },
+        projectId: { type: 'string', description: 'Project ID (optional, uses template project if not provided)' },
+        title: { type: 'string', description: 'Override title (optional, uses template title)' },
+        description: { type: 'string', description: 'Override description (optional)' },
+        assignee: { type: 'string', description: 'Override assignee (optional)' },
+        priority: { type: 'string', description: 'Override priority (optional)' },
+      },
+      required: ['templateId'],
+    },
+  },
 ]
 
 const listProjects: ToolHandler = async (client) => {
@@ -328,6 +438,154 @@ const searchIssues: ToolHandler = async (client, args) => {
   }))
 }
 
+const TAG_REFERENCE_CLASS = 'tags:class:TagReference' as Ref<Class<Doc>>
+
+const deleteIssue: ToolHandler = async (client, args) => {
+  const { issueId } = z.object({ issueId: z.string() }).parse(args)
+  const issue = await client.findOne(tracker.class.Issue, { _id: issueId })
+  if (!issue) throw new NotFoundError('Issue', issueId)
+
+  await client.removeDoc(tracker.class.Issue, issue.space, issueId)
+  return { success: true, issueId, identifier: issue.identifier, message: `Deleted issue ${issue.identifier}` }
+}
+
+const addIssueLabel: ToolHandler = async (client, args) => {
+  const input = z.object({
+    issueId: z.string(),
+    label: z.string().min(1),
+    color: z.number().optional(),
+  }).parse(args)
+
+  const issue = await client.findOne(tracker.class.Issue, { _id: input.issueId })
+  if (!issue) throw new NotFoundError('Issue', input.issueId)
+
+  const tagId = generateId()
+  await client.addCollection(
+    TAG_REFERENCE_CLASS, issue.space, input.issueId, tracker.class.Issue, 'labels',
+    { title: input.label, color: input.color || 0, tag: tagId },
+    tagId
+  )
+
+  return { success: true, issueId: input.issueId, label: input.label, message: `Added label "${input.label}" to ${issue.identifier}` }
+}
+
+const listIssueTemplates: ToolHandler = async (client, args) => {
+  const input = z.object({ projectId: z.string().optional() }).parse(args)
+  const query: any = {}
+  if (input.projectId) query.space = input.projectId
+
+  const templates = await client.findAll(tracker.class.IssueTemplate, query)
+  return templates.map((t: any) => ({
+    id: t._id,
+    title: t.title,
+    priority: t.priority,
+    assignee: t.assignee,
+    component: t.component,
+    milestone: t.milestone,
+    space: t.space,
+  }))
+}
+
+const getIssueTemplate: ToolHandler = async (client, args) => {
+  const { templateId } = z.object({ templateId: z.string() }).parse(args)
+  const template = await client.findOne(tracker.class.IssueTemplate, { _id: templateId })
+  if (!template) throw new NotFoundError('Issue template', templateId)
+  return template
+}
+
+const createIssueTemplate: ToolHandler = async (client, args) => {
+  const input = z.object({
+    projectId: z.string(),
+    title: z.string().min(1),
+    description: z.string().optional(),
+    priority: z.enum(['Urgent', 'High', 'Medium', 'Low', 'NoPriority']).optional(),
+    assignee: z.string().optional(),
+    component: z.string().optional(),
+    milestone: z.string().optional(),
+  }).parse(args)
+
+  const project = await client.findOne(tracker.class.Project, { _id: input.projectId })
+  if (!project) throw new NotFoundError('Project', input.projectId)
+
+  const templateId = generateId()
+  await client.createDoc(tracker.class.IssueTemplate, input.projectId, {
+    title: input.title,
+    description: input.description || '',
+    priority: priorityMap[input.priority || 'NoPriority'] || IssuePriority.NoPriority,
+    assignee: input.assignee || null,
+    component: input.component || null,
+    milestone: input.milestone || null,
+    estimation: 0,
+    labels: [],
+    children: [],
+    comments: 0,
+  }, templateId)
+
+  return { success: true, templateId, message: `Created issue template "${input.title}"` }
+}
+
+const updateIssueTemplate: ToolHandler = async (client, args) => {
+  const input = z.object({
+    templateId: z.string(),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    priority: z.enum(['Urgent', 'High', 'Medium', 'Low', 'NoPriority']).optional(),
+    assignee: z.string().optional(),
+    component: z.string().optional(),
+    milestone: z.string().optional(),
+  }).parse(args)
+
+  const template = await client.findOne(tracker.class.IssueTemplate, { _id: input.templateId })
+  if (!template) throw new NotFoundError('Issue template', input.templateId)
+
+  const updates: any = {}
+  if (input.title) updates.title = input.title
+  if (input.description !== undefined) updates.description = input.description
+  if (input.priority) updates.priority = priorityMap[input.priority]
+  if (input.assignee !== undefined) updates.assignee = input.assignee || null
+  if (input.component !== undefined) updates.component = input.component || null
+  if (input.milestone !== undefined) updates.milestone = input.milestone || null
+
+  if (Object.keys(updates).length > 0) {
+    await client.updateDoc(tracker.class.IssueTemplate, template.space, input.templateId, updates)
+  }
+
+  return { success: true, templateId: input.templateId, message: `Updated issue template "${template.title}"` }
+}
+
+const deleteIssueTemplate: ToolHandler = async (client, args) => {
+  const { templateId } = z.object({ templateId: z.string() }).parse(args)
+  const template = await client.findOne(tracker.class.IssueTemplate, { _id: templateId })
+  if (!template) throw new NotFoundError('Issue template', templateId)
+
+  await client.removeDoc(tracker.class.IssueTemplate, template.space, templateId)
+  return { success: true, templateId, message: `Deleted issue template "${template.title}"` }
+}
+
+const createIssueFromTemplate: ToolHandler = async (client, args) => {
+  const input = z.object({
+    templateId: z.string(),
+    projectId: z.string().optional(),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    assignee: z.string().optional(),
+    priority: z.enum(['Urgent', 'High', 'Medium', 'Low', 'NoPriority']).optional(),
+  }).parse(args)
+
+  const template = await client.findOne(tracker.class.IssueTemplate, { _id: input.templateId })
+  if (!template) throw new NotFoundError('Issue template', input.templateId)
+
+  return createIssue(client, {
+    projectId: input.projectId || template.space,
+    title: input.title || template.title,
+    description: input.description || template.description || undefined,
+    priority: input.priority || Object.entries(priorityMap).find(([, v]) => v === template.priority)?.[0],
+    assignee: input.assignee || template.assignee || undefined,
+    component: template.component || undefined,
+    milestone: template.milestone || undefined,
+  })
+}
+
 export const handlers: Record<string, ToolHandler> = {
   list_projects: listProjects,
   list_issues: listIssues,
@@ -336,4 +594,12 @@ export const handlers: Record<string, ToolHandler> = {
   update_issue: updateIssue,
   add_comment: addComment,
   search_issues: searchIssues,
+  delete_issue: deleteIssue,
+  add_issue_label: addIssueLabel,
+  list_issue_templates: listIssueTemplates,
+  get_issue_template: getIssueTemplate,
+  create_issue_template: createIssueTemplate,
+  update_issue_template: updateIssueTemplate,
+  delete_issue_template: deleteIssueTemplate,
+  create_issue_from_template: createIssueFromTemplate,
 }

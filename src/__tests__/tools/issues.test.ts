@@ -4,8 +4,8 @@ import { createMockClient } from '../helpers'
 import { NotFoundError } from '../../errors'
 
 describe('issues tool definitions', () => {
-  it('exports 7 tool definitions', () => {
-    expect(definitions).toHaveLength(7)
+  it('exports 15 tool definitions', () => {
+    expect(definitions).toHaveLength(15)
   })
 
   it('has all expected tool names', () => {
@@ -17,6 +17,14 @@ describe('issues tool definitions', () => {
     expect(names).toContain('update_issue')
     expect(names).toContain('add_comment')
     expect(names).toContain('search_issues')
+    expect(names).toContain('delete_issue')
+    expect(names).toContain('add_issue_label')
+    expect(names).toContain('list_issue_templates')
+    expect(names).toContain('get_issue_template')
+    expect(names).toContain('create_issue_template')
+    expect(names).toContain('update_issue_template')
+    expect(names).toContain('delete_issue_template')
+    expect(names).toContain('create_issue_from_template')
   })
 
   it('all definitions have required schema fields', () => {
@@ -194,6 +202,143 @@ describe('issues handlers', () => {
 
     it('throws on empty query', async () => {
       await expect(handlers.search_issues(client, { query: '' })).rejects.toThrow()
+    })
+  })
+
+  describe('delete_issue', () => {
+    it('deletes issue when found', async () => {
+      const issue = { _id: 'i1', identifier: 'PROJ-1', space: 'p1' }
+      client.findOne.mockResolvedValue(issue)
+
+      const result: any = await handlers.delete_issue(client, { issueId: 'i1' })
+      expect(result.success).toBe(true)
+      expect(client.removeDoc).toHaveBeenCalled()
+    })
+
+    it('throws NotFoundError for missing issue', async () => {
+      await expect(handlers.delete_issue(client, { issueId: 'missing' }))
+        .rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('add_issue_label', () => {
+    it('adds label to issue', async () => {
+      const issue = { _id: 'i1', identifier: 'PROJ-1', space: 'p1' }
+      client.findOne.mockResolvedValue(issue)
+
+      const result: any = await handlers.add_issue_label(client, { issueId: 'i1', label: 'bug' })
+      expect(result.success).toBe(true)
+      expect(result.label).toBe('bug')
+      expect(client.addCollection).toHaveBeenCalled()
+    })
+
+    it('throws NotFoundError for missing issue', async () => {
+      await expect(handlers.add_issue_label(client, { issueId: 'missing', label: 'bug' }))
+        .rejects.toThrow(NotFoundError)
+    })
+
+    it('throws on empty label', async () => {
+      await expect(handlers.add_issue_label(client, { issueId: 'i1', label: '' })).rejects.toThrow()
+    })
+  })
+
+  describe('list_issue_templates', () => {
+    it('returns templates', async () => {
+      client.findAll.mockResolvedValue([
+        { _id: 't1', title: 'Bug Report', priority: 0, assignee: null, component: null, milestone: null, space: 'p1' },
+      ])
+      const result: any = await handlers.list_issue_templates(client, {})
+      expect(result).toHaveLength(1)
+      expect(result[0].title).toBe('Bug Report')
+    })
+
+    it('filters by project', async () => {
+      await handlers.list_issue_templates(client, { projectId: 'p1' })
+      expect(client.findAll).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ space: 'p1' }))
+    })
+  })
+
+  describe('get_issue_template', () => {
+    it('returns template when found', async () => {
+      const template = { _id: 't1', title: 'Bug Report' }
+      client.findOne.mockResolvedValue(template)
+
+      const result = await handlers.get_issue_template(client, { templateId: 't1' })
+      expect(result).toEqual(template)
+    })
+
+    it('throws NotFoundError for missing template', async () => {
+      await expect(handlers.get_issue_template(client, { templateId: 'missing' }))
+        .rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('create_issue_template', () => {
+    it('creates template with required fields', async () => {
+      const project = { _id: 'p1' }
+      client.findOne.mockResolvedValue(project)
+
+      const result: any = await handlers.create_issue_template(client, { projectId: 'p1', title: 'Bug Report' })
+      expect(result.success).toBe(true)
+      expect(client.createDoc).toHaveBeenCalled()
+    })
+
+    it('throws NotFoundError for missing project', async () => {
+      await expect(handlers.create_issue_template(client, { projectId: 'missing', title: 'Bug' }))
+        .rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('update_issue_template', () => {
+    it('updates template fields', async () => {
+      const template = { _id: 't1', title: 'Old', space: 'p1' }
+      client.findOne.mockResolvedValue(template)
+
+      const result: any = await handlers.update_issue_template(client, { templateId: 't1', title: 'New' })
+      expect(result.success).toBe(true)
+      expect(client.updateDoc).toHaveBeenCalled()
+    })
+
+    it('throws NotFoundError for missing template', async () => {
+      await expect(handlers.update_issue_template(client, { templateId: 'missing' }))
+        .rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('delete_issue_template', () => {
+    it('deletes template when found', async () => {
+      const template = { _id: 't1', title: 'Bug Report', space: 'p1' }
+      client.findOne.mockResolvedValue(template)
+
+      const result: any = await handlers.delete_issue_template(client, { templateId: 't1' })
+      expect(result.success).toBe(true)
+      expect(client.removeDoc).toHaveBeenCalled()
+    })
+
+    it('throws NotFoundError for missing template', async () => {
+      await expect(handlers.delete_issue_template(client, { templateId: 'missing' }))
+        .rejects.toThrow(NotFoundError)
+    })
+  })
+
+  describe('create_issue_from_template', () => {
+    it('creates issue from template defaults', async () => {
+      const template = { _id: 't1', title: 'Bug Report', space: 'p1', priority: 0, assignee: null, component: null, milestone: null, description: '' }
+      const project = { _id: 'p1', identifier: 'PROJ', defaultIssueStatus: 's1', _class: 'tracker:class:Project' }
+      client.findOne
+        .mockResolvedValueOnce(template)
+        .mockResolvedValueOnce(project)
+        .mockResolvedValueOnce(null)
+      client.updateDoc.mockResolvedValue({ object: { sequence: 5 } })
+
+      const result: any = await handlers.create_issue_from_template(client, { templateId: 't1' })
+      expect(result.success).toBe(true)
+      expect(result.identifier).toBe('PROJ-5')
+    })
+
+    it('throws NotFoundError for missing template', async () => {
+      await expect(handlers.create_issue_from_template(client, { templateId: 'missing' }))
+        .rejects.toThrow(NotFoundError)
     })
   })
 })
