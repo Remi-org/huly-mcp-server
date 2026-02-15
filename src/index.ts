@@ -18,20 +18,29 @@ const server = new Server(
 
 let client: any = null
 
-async function ensureConnected() {
-  if (!client) {
-    logger.info('Connecting to Huly', { url: config.hulyUrl, workspace: config.hulyWorkspace })
-    const options: ConnectOptions = {
-      email: config.hulyEmail,
-      password: config.hulyPassword,
-      workspace: config.hulyWorkspace,
-      socketFactory: NodeWebSocketFactory,
-      connectionTimeout: 30000,
-    }
-    client = await connect(config.hulyUrl, options)
-    logger.info('Connected to Huly')
+async function ensureConnected(retries = 3) {
+  if (client) return client
+
+  const options: ConnectOptions = {
+    email: config.hulyEmail,
+    password: config.hulyPassword,
+    workspace: config.hulyWorkspace,
+    socketFactory: NodeWebSocketFactory,
+    connectionTimeout: 30000,
   }
-  return client
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      logger.info('Connecting to Huly', { url: config.hulyUrl, workspace: config.hulyWorkspace, attempt })
+      client = await connect(config.hulyUrl, options)
+      logger.info('Connected to Huly')
+      return client
+    } catch (error) {
+      logger.warn('Connection attempt failed', { attempt, error: String(error) })
+      if (attempt === retries) throw error
+      await new Promise((r) => setTimeout(r, 1000 * attempt))
+    }
+  }
 }
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -51,6 +60,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const result = await handler(hulyClient, args || {})
     return successResponse(result)
   } catch (error) {
+    if (error instanceof Error && error.message.includes('ECONNR')) {
+      client = null
+    }
     logger.error('Tool execution failed', { tool: name, error: String(error) })
     return errorResponse(error)
   }

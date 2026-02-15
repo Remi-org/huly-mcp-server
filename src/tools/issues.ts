@@ -3,7 +3,6 @@ import tracker, { IssuePriority } from '@hcengineering/tracker'
 import core, { generateId, Ref, Class, Doc } from '@hcengineering/core'
 import { makeRank } from '@hcengineering/rank'
 import { NotFoundError } from '../errors'
-import { errorResponse, successResponse, type ToolResponse } from '../error-handler'
 import type { ToolDefinition, ToolHandler } from '../types'
 
 const COMMENT_CLASS = 'chunter:class:ChatMessage' as Ref<Class<Doc>>
