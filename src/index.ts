@@ -2,201 +2,78 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js'
-import { HulyClient } from './huly-client'
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
+import { ConnectOptions, NodeWebSocketFactory, connect } from '@hcengineering/api-client'
+import { loadConfig } from './config'
+import { logger } from './logger'
+import { errorResponse, successResponse } from './error-handler'
+import { allDefinitions, allHandlers } from './tools'
+
+const config = loadConfig()
 
 const server = new Server(
-  {
-    name: 'huly-mcp-server',
-    version: '1.0.0',
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
+  { name: 'huly-mcp-server', version: '1.0.0' },
+  { capabilities: { tools: {} } }
 )
 
-let hulyClient: HulyClient | null = null
+let client: any = null
 
-async function ensureConnected(): Promise<HulyClient> {
-  if (!hulyClient) {
-    hulyClient = new HulyClient({
-      url: process.env.HULY_URL!,
-      email: process.env.HULY_EMAIL!,
-      password: process.env.HULY_PASSWORD!,
-      workspace: process.env.HULY_WORKSPACE!,
-    })
-    await hulyClient.connect()
+async function ensureConnected() {
+  if (!client) {
+    logger.info('Connecting to Huly', { url: config.hulyUrl, workspace: config.hulyWorkspace })
+    const options: ConnectOptions = {
+      email: config.hulyEmail,
+      password: config.hulyPassword,
+      workspace: config.hulyWorkspace,
+      socketFactory: NodeWebSocketFactory,
+      connectionTimeout: 30000,
+    }
+    client = await connect(config.hulyUrl, options)
+    logger.info('Connected to Huly')
   }
-  return hulyClient
+  return client
 }
 
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      {
-        name: 'list_projects',
-        description: 'List all projects in Huly workspace',
-        inputSchema: {
-          type: 'object',
-          properties: {},
-        },
-      },
-      {
-        name: 'list_issues',
-        description: 'List issues with optional filters',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            projectId: {
-              type: 'string',
-              description: 'Filter by project ID',
-            },
-            status: {
-              type: 'string',
-              description: 'Filter by status',
-            },
-            assignee: {
-              type: 'string',
-              description: 'Filter by assignee',
-            },
-          },
-        },
-      },
-      {
-        name: 'get_issue',
-        description: 'Get details of a specific issue by ID',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            issueId: {
-              type: 'string',
-              description: 'The issue ID to retrieve',
-            },
-          },
-          required: ['issueId'],
-        },
-      },
-    ],
-  }
-})
+server.setRequestHandler(ListToolsRequestSchema, async () => ({
+  tools: allDefinitions,
+}))
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
 
+  const handler = allHandlers[name]
+  if (!handler) {
+    return errorResponse(new Error(`Unknown tool: ${name}`))
+  }
+
   try {
-    const client = await ensureConnected()
-
-    switch (name) {
-      case 'list_projects': {
-        const projects = await client.listProjects()
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(
-                projects.map((p) => ({
-                  id: p._id,
-                  identifier: p.identifier,
-                  name: p.name,
-                  description: p.description,
-                })),
-                null,
-                2
-              ),
-            },
-          ],
-        }
-      }
-
-      case 'list_issues': {
-        const filters = args as {
-          projectId?: string
-          status?: string
-          assignee?: string
-        }
-        const issues = await client.listIssues(filters)
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(
-                issues.map((i) => ({
-                  id: i._id,
-                  identifier: i.identifier,
-                  title: i.title,
-                  status: i.status,
-                  assignee: i.assignee,
-                  number: i.number,
-                })),
-                null,
-                2
-              ),
-            },
-          ],
-        }
-      }
-
-      case 'get_issue': {
-        const { issueId } = args as { issueId: string }
-        const issue = await client.getIssue(issueId)
-        if (!issue) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: `Issue ${issueId} not found`,
-              },
-            ],
-            isError: true,
-          }
-        }
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(issue, null, 2),
-            },
-          ],
-        }
-      }
-
-      default:
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Unknown tool: ${name}`,
-            },
-          ],
-          isError: true,
-        }
-    }
+    const hulyClient = await ensureConnected()
+    const result = await handler(hulyClient, args || {})
+    return successResponse(result)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `Error: ${errorMessage}`,
-        },
-      ],
-      isError: true,
-    }
+    logger.error('Tool execution failed', { tool: name, error: String(error) })
+    return errorResponse(error)
   }
 })
 
 async function main() {
   const transport = new StdioServerTransport()
   await server.connect(transport)
-  console.error('Huly MCP server running on stdio')
+  logger.info('Huly MCP server running on stdio')
 }
 
+function shutdown() {
+  logger.info('Shutting down')
+  if (client) {
+    client.close().catch(() => {})
+  }
+  process.exit(0)
+}
+
+process.on('SIGTERM', shutdown)
+process.on('SIGINT', shutdown)
+
 main().catch((error) => {
-  console.error('Fatal error:', error)
+  logger.error('Fatal error', { error: String(error) })
   process.exit(1)
 })
