@@ -8,6 +8,7 @@ export function createMockClient(overrides: Record<string, any> = {}) {
     updateDoc: vi.fn().mockResolvedValue(undefined),
     removeDoc: vi.fn().mockResolvedValue(undefined),
     addCollection: vi.fn().mockResolvedValue(undefined),
+    removeCollection: vi.fn().mockResolvedValue(undefined),
     uploadMarkup: vi.fn().mockResolvedValue('blob:markup-ref'),
     markup: {
       fetchMarkup: vi.fn().mockResolvedValue('# Fetched content'),
