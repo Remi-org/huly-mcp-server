@@ -5,12 +5,18 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "tsx src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "engines": {
     "node": ">=20"
   },
-  "keywords": ["mcp", "huly"],
+  "keywords": [
+    "mcp",
+    "huly"
+  ],
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
@@ -21,6 +27,8 @@
   "devDependencies": {
     "@types/node": "^25.0.0",
     "@types/ws": "^8.18.1",
-    "typescript": "^5.9.3"
+    "@vitest/coverage-v8": "^4.0.18",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
