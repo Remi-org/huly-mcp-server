@@ -1,8 +1,29 @@
 #!/usr/bin/env node
 
+import { readFileSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+try {
+  const envPath = resolve(__dirname, '..', '.env')
+  const lines = readFileSync(envPath, 'utf-8').split('\n')
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eq = trimmed.indexOf('=')
+    if (eq === -1) continue
+    const key = trimmed.slice(0, eq).trim()
+    const val = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '')
+    if (!process.env[key]) process.env[key] = val
+  }
+} catch {}
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
+import { createServer } from 'node:http'
 import { ConnectOptions, NodeWebSocketFactory, connect } from '@hcengineering/api-client'
 import { loadConfig } from './config'
 import { logger } from './logger'
@@ -69,9 +90,35 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 })
 
 async function main() {
-  const transport = new StdioServerTransport()
-  await server.connect(transport)
-  logger.info('Huly MCP server running on stdio')
+  const mode = process.env.MCP_TRANSPORT || 'stdio'
+
+  if (mode === 'http') {
+    const port = parseInt(process.env.MCP_HTTP_PORT || '3001', 10)
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
+
+    const httpServer = createServer(async (req, res) => {
+      if (req.url === '/health') {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ status: 'ok' }))
+        return
+      }
+      if (req.url === '/mcp') {
+        await transport.handleRequest(req, res)
+        return
+      }
+      res.writeHead(404)
+      res.end()
+    })
+
+    await server.connect(transport)
+    httpServer.listen(port, () => {
+      logger.info(`Huly MCP server running on http://0.0.0.0:${port}/mcp`)
+    })
+  } else {
+    const transport = new StdioServerTransport()
+    await server.connect(transport)
+    logger.info('Huly MCP server running on stdio')
+  }
 }
 
 function shutdown() {

@@ -10,5 +10,9 @@ FROM deps
 COPY tsconfig.json ./
 COPY src/ ./src/
 
+ENV MCP_TRANSPORT=http
+ENV MCP_HTTP_PORT=3001
+EXPOSE 3001
+
 USER node
 CMD ["npx", "tsx", "src/index.ts"]
