@@ -1,0 +1,302 @@
+import { Class, Doc, DocumentQuery, FindOptions, Mixin, Ref } from '@hcengineering/core';
+import { Asset, IntlString, Plugin, Resource } from '@hcengineering/platform';
+import { AnyComponent, PopupAlignment } from '@hcengineering/ui/src/types';
+import { Action, ActionCategory, ActivityAttributePresenter, Aggregation, AllValuesFunc, ArrayEditor, AttributeEditor, AttributeFilter, AttributeFilterPresenter, AttributePresenter, ClassFilters, ClassSortFuncs, CollectionEditor, CollectionPresenter, FilterMode, FilteredView, Groupping, IgnoreActions, InlineAttributEditor, LinkPresenter, LinkProvider, ListHeaderExtra, ListItemPresenter, ObjectEditor, ObjectEditorFooter, ObjectEditorHeader, ObjectFactory, ObjectIcon, ObjectIdentifier, ObjectPanel, ObjectPresenter, ObjectTitle, ObjectTooltip, ObjectValidator, ReferenceObjectProvider, AttrPresenter, PreviewPresenter, SpaceHeader, SpaceName, SpacePresenter, ViewAction, Viewlet, ViewletDescriptor, ViewletPreference, LinkIdProvider } from './types';
+export * from './types';
+export * from './utils';
+/**
+ * @public
+ */
+export declare const viewId: Plugin;
+/**
+ * @public
+ */
+declare const view: {
+    mixin: {
+        ClassFilters: Ref<Mixin<ClassFilters>>;
+        AttributeFilter: Ref<Mixin<AttributeFilter>>;
+        AttributeEditor: Ref<Mixin<AttributeEditor>>;
+        CollectionPresenter: Ref<Mixin<CollectionPresenter>>;
+        CollectionEditor: Ref<Mixin<CollectionEditor>>;
+        InlineAttributEditor: Ref<Mixin<InlineAttributEditor>>;
+        ArrayEditor: Ref<Mixin<ArrayEditor>>;
+        AttributePresenter: Ref<Mixin<AttributePresenter>>;
+        ActivityAttributePresenter: Ref<Mixin<ActivityAttributePresenter>>;
+        ListItemPresenter: Ref<Mixin<ListItemPresenter>>;
+        ObjectEditor: Ref<Mixin<ObjectEditor>>;
+        ObjectPresenter: Ref<Mixin<ObjectPresenter>>;
+        ObjectEditorHeader: Ref<Mixin<ObjectEditorHeader>>;
+        ObjectEditorFooter: Ref<Mixin<ObjectEditorFooter>>;
+        ObjectPanelFooter: Ref<Mixin<ObjectEditorFooter>>;
+        ObjectValidator: Ref<Mixin<ObjectValidator>>;
+        ObjectFactory: Ref<Mixin<ObjectFactory>>;
+        ObjectTitle: Ref<Mixin<ObjectTitle>>;
+        ObjectIdentifier: Ref<Mixin<ObjectIdentifier>>;
+        ReferenceObjectProvider: Ref<Mixin<ReferenceObjectProvider>>;
+        ObjectTooltip: Ref<Mixin<ObjectTooltip>>;
+        SpaceHeader: Ref<Mixin<SpaceHeader>>;
+        SpaceName: Ref<Mixin<SpaceName>>;
+        IgnoreActions: Ref<Mixin<IgnoreActions>>;
+        PreviewPresenter: Ref<Mixin<PreviewPresenter>>;
+        ListHeaderExtra: Ref<Mixin<ListHeaderExtra>>;
+        SortFuncs: Ref<Mixin<ClassSortFuncs>>;
+        AllValuesFunc: Ref<Mixin<AllValuesFunc>>;
+        ObjectPanel: Ref<Mixin<ObjectPanel>>;
+        LinkProvider: Ref<Mixin<LinkProvider>>;
+        LinkIdProvider: Ref<Mixin<LinkIdProvider>>;
+        SpacePresenter: Ref<Mixin<SpacePresenter>>;
+        AttributeFilterPresenter: Ref<Mixin<AttributeFilterPresenter>>;
+        Aggregation: Ref<Mixin<Aggregation>>;
+        Groupping: Ref<Mixin<Groupping>>;
+        ObjectIcon: Ref<Mixin<ObjectIcon>>;
+    };
+    class: {
+        ViewletPreference: Ref<Class<ViewletPreference>>;
+        ViewletDescriptor: Ref<Class<ViewletDescriptor>>;
+        Viewlet: Ref<Class<Viewlet>>;
+        Action: Ref<Class<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>>;
+        ActionCategory: Ref<Class<ActionCategory>>;
+        LinkPresenter: Ref<Class<LinkPresenter>>;
+        FilterMode: Ref<Class<FilterMode>>;
+        FilteredView: Ref<Class<FilteredView>>;
+        AttrPresenter: Ref<Class<AttrPresenter>>;
+    };
+    action: {
+        Delete: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        Archive: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        UnArchive: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        Join: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        Leave: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        Move: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        MoveLeft: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        MoveRight: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        MoveUp: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        MoveDown: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        SelectItem: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        SelectItemAll: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        SelectItemNone: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        SelectUp: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        SelectDown: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        ShowPreview: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        ShowActions: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        Preview: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        Open: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        OpenInNewTab: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+        RemoveRelation: Ref<Action<Doc<import("@hcengineering/core").Space>, Record<string, any>>>;
+    };
+    viewlet: {
+        Table: Ref<ViewletDescriptor>;
+        List: Ref<ViewletDescriptor>;
+    };
+    component: {
+        ActionsPopup: AnyComponent;
+        ObjectPresenter: AnyComponent;
+        EditDoc: AnyComponent;
+        SpacePresenter: AnyComponent;
+        BooleanTruePresenter: AnyComponent;
+        ValueSelector: AnyComponent;
+        GrowPresenter: AnyComponent;
+        DividerPresenter: AnyComponent;
+        IconWithEmoji: AnyComponent;
+        AttachedDocPanel: AnyComponent;
+        ObjectMention: AnyComponent;
+        SearchSelector: AnyComponent;
+        FoldersBrowser: AnyComponent;
+    };
+    ids: {
+        IconWithEmoji: Asset;
+    };
+    string: {
+        CustomizeView: IntlString;
+        LabelNA: IntlString;
+        View: IntlString;
+        FilteredViews: IntlString;
+        NewFilteredView: IntlString;
+        FilteredViewName: IntlString;
+        Move: IntlString;
+        MoveClass: IntlString;
+        SelectToMove: IntlString;
+        Cancel: IntlString;
+        List: IntlString;
+        Grid: IntlString;
+        AddSavedView: IntlString;
+        Timeline: IntlString;
+        Public: IntlString;
+        Hide: IntlString;
+        Rename: IntlString;
+        Assigned: IntlString;
+        Open: IntlString;
+        OpenInNewTab: IntlString;
+        Created: IntlString;
+        Delete: IntlString;
+        Then: IntlString;
+        Or: IntlString;
+        Subscribed: IntlString;
+        HyperlinkPlaceholder: IntlString;
+        CopyToClipboard: IntlString;
+        NoGrouping: IntlString;
+        Type: IntlString;
+        UnArchive: IntlString;
+        Archive: IntlString;
+        Save: IntlString;
+        PublicView: IntlString;
+        Archived: IntlString;
+        MoreActions: IntlString;
+        Pin: IntlString;
+        Unpin: IntlString;
+        Join: IntlString;
+        Leave: IntlString;
+        Copied: IntlString;
+        And: IntlString;
+        Title: IntlString;
+        DeleteObject: IntlString;
+        DeleteObjectConfirm: IntlString;
+        RemoveRelationConfirmation: IntlString;
+        RemoveRelation: IntlString;
+    };
+    icon: {
+        Table: Asset;
+        List: Asset;
+        Card: Asset;
+        Timeline: Asset;
+        Delete: Asset;
+        MoreH: Asset;
+        Move: Asset;
+        Archive: Asset;
+        Statuses: Asset;
+        Setting: Asset;
+        Open: Asset;
+        Edit: Asset;
+        CopyId: Asset;
+        CopyLink: Asset;
+        ArrowRight: Asset;
+        Views: Asset;
+        Pin: Asset;
+        Model: Asset;
+        DevModel: Asset;
+        ViewButton: Asset;
+        Filter: Asset;
+        Configure: Asset;
+        Database: Asset;
+        Star: Asset;
+        Eye: Asset;
+        EyeCrossed: Asset;
+        Bubble: Asset;
+        CheckCircle: Asset;
+        Add: Asset;
+        Image: Asset;
+        Table2: Asset;
+        CodeBlock: Asset;
+        SeparatorLine: Asset;
+        Circle: Asset;
+        Join: Asset;
+        Leave: Asset;
+        Copy: Asset;
+        TodoList: Asset;
+        DetailsFilled: Asset;
+        Translate: Asset;
+        Undo: Asset;
+        Video: Asset;
+        Audio: Asset;
+        File: Asset;
+        PinTack: Asset;
+        Feather: Asset;
+    };
+    category: {
+        General: Ref<ActionCategory>;
+        GeneralNavigation: Ref<ActionCategory>;
+        Navigation: Ref<ActionCategory>;
+        Editor: Ref<ActionCategory>;
+        MarkdownFormatting: Ref<ActionCategory>;
+    };
+    filter: {
+        FilterArrayAll: Ref<FilterMode>;
+        FilterArrayAny: Ref<FilterMode>;
+        FilterObjectIn: Ref<FilterMode>;
+        FilterObjectNin: Ref<FilterMode>;
+        FilterValueIn: Ref<FilterMode>;
+        FilterValueNin: Ref<FilterMode>;
+        FilterBefore: Ref<FilterMode>;
+        FilterAfter: Ref<FilterMode>;
+        FilterContains: Ref<FilterMode>;
+        FilterNestedMatch: Ref<FilterMode>;
+        FilterNestedDontMatch: Ref<FilterMode>;
+        FilterDateOutdated: Ref<FilterMode>;
+        FilterDateToday: Ref<FilterMode>;
+        FilterDateYesterday: Ref<FilterMode>;
+        FilterDateWeek: Ref<FilterMode>;
+        FilterDateNextW: Ref<FilterMode>;
+        FilterDateM: Ref<FilterMode>;
+        FilterDateNextM: Ref<FilterMode>;
+        FilterDateNotSpecified: Ref<FilterMode>;
+        FilterDateCustom: Ref<FilterMode>;
+        FilterDateBetween: Ref<FilterMode>;
+    };
+    popup: {
+        PositionElementAlignment: Resource<(e?: Event) => PopupAlignment | undefined>;
+    };
+    actionImpl: {
+        CopyTextToClipboard: ViewAction<{
+            textProvider: Resource<(doc: Doc, props: Record<string, any>) => Promise<string>>;
+            props?: Record<string, any> | undefined;
+        }>;
+        UpdateDocument: ViewAction<{
+            key: string;
+            value: any;
+            ask?: boolean | undefined;
+            label?: IntlString | undefined;
+            message?: IntlString | undefined;
+        }>;
+        ShowPanel: ViewAction<{
+            component?: AnyComponent | undefined;
+            element?: "top" | "right" | "float" | "logo" | "logo-mini" | "logo-portrait" | "account" | "account-portrait" | "account-mobile" | "notify" | "notify-mobile" | "full" | "content" | "middle" | "help-center" | "centered" | "center" | "status" | "movable" | "full-centered" | undefined;
+            rightSection?: AnyComponent | undefined;
+        }>;
+        ShowPopup: ViewAction<{
+            component: AnyComponent;
+            element?: "top" | "right" | "float" | "logo" | "logo-mini" | "logo-portrait" | "account" | "account-portrait" | "account-mobile" | "notify" | "notify-mobile" | "full" | "content" | "middle" | "help-center" | "centered" | "center" | "status" | "movable" | "full-centered" | Resource<(e?: Event) => PopupAlignment | undefined> | undefined;
+            _id?: string | undefined;
+            _class?: string | undefined;
+            _space?: string | undefined;
+            value?: string | undefined;
+            values?: string | undefined;
+            props?: Record<string, any> | undefined;
+            fillProps?: Record<string, string> | undefined;
+        }>;
+        ShowEditor: ViewAction<{
+            element?: "top" | "right" | "float" | "logo" | "logo-mini" | "logo-portrait" | "account" | "account-portrait" | "account-mobile" | "notify" | "notify-mobile" | "full" | "content" | "middle" | "help-center" | "centered" | "center" | "status" | "movable" | "full-centered" | Resource<(e?: Event) => PopupAlignment | undefined> | undefined;
+            attribute: string;
+            props?: Record<string, any> | undefined;
+        }>;
+        ValueSelector: ViewAction<{
+            attribute: string;
+            _class?: Ref<Class<Doc<import("@hcengineering/core").Space>>> | undefined;
+            query?: DocumentQuery<Doc<import("@hcengineering/core").Space>> | undefined;
+            queryOptions?: FindOptions<Doc<import("@hcengineering/core").Space>> | undefined;
+            fillQuery?: Record<string, string> | undefined;
+            docMatches?: string[] | undefined;
+            searchField?: string | undefined;
+            castRequest?: Ref<Mixin<Doc<import("@hcengineering/core").Space>>> | undefined;
+            values?: {
+                icon?: Asset | undefined;
+                label: IntlString;
+                id: number | string;
+            }[] | undefined;
+            placeholder?: IntlString | undefined;
+        }>;
+        AttributeSelector: ViewAction<{
+            attribute: string;
+            isAction?: boolean | undefined;
+            fillProps?: Record<string, string> | undefined;
+            values?: {
+                icon?: Asset | undefined;
+                label: IntlString;
+                id: number | string;
+            }[] | undefined;
+            valueKey?: string | undefined;
+        }>;
+        Delete: ViewAction;
+    };
+};
+export default view;
+//# sourceMappingURL=index.d.ts.map

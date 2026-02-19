@@ -1,0 +1,1 @@
+{"version":3,"file":"server-kit.d.ts","sourceRoot":"","sources":["../../src/kits/server-kit.ts"],"names":[],"mappings":"AAeA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AAUxC,OAAO,EAAa,YAAY,EAAE,MAAM,gBAAgB,CAAA;AAIxD,OAAO,EAAc,iBAAiB,EAAE,MAAM,eAAe,CAAA;AA0B7D,MAAM,WAAW,gBAAiB,SAAQ,iBAAiB;IACzD,KAAK,EAAE,OAAO,CAAC,YAAY,CAAC,CAAA;CAC7B;AAED,eAAO,MAAM,SAAS,kCAoBpB,CAAA"}

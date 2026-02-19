@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/common.ts"],
+  "sourcesContent": ["export function groupByArray<T, K> (array: T[], keyProvider: (item: T) => K): Map<K, T[]> {\n  const result = new Map<K, T[]>()\n\n  array.forEach((item) => {\n    const key = keyProvider(item)\n\n    if (!result.has(key)) {\n      result.set(key, [item])\n    } else {\n      result.get(key)?.push(item)\n    }\n  })\n\n  return result\n}\n\nexport function flipSet<T> (set: Set<T>, item: T): Set<T> {\n  if (set.has(item)) {\n    set.delete(item)\n  } else {\n    set.add(item)\n  }\n\n  return set\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,SAAS,aAAoB,OAAY,aAA0C;AACxF,QAAM,SAAS,oBAAI,IAAY;AAE/B,QAAM,QAAQ,CAAC,SAAS;AACtB,UAAM,MAAM,YAAY,IAAI;AAE5B,QAAI,CAAC,OAAO,IAAI,GAAG,GAAG;AACpB,aAAO,IAAI,KAAK,CAAC,IAAI,CAAC;AAAA,IACxB,OAAO;AACL,aAAO,IAAI,GAAG,GAAG,KAAK,IAAI;AAAA,IAC5B;AAAA,EACF,CAAC;AAED,SAAO;AACT;AAdgB;AAgBT,SAAS,QAAY,KAAa,MAAiB;AACxD,MAAI,IAAI,IAAI,IAAI,GAAG;AACjB,QAAI,OAAO,IAAI;AAAA,EACjB,OAAO;AACL,QAAI,IAAI,IAAI;AAAA,EACd;AAEA,SAAO;AACT;AARgB;",
+  "names": []
+}

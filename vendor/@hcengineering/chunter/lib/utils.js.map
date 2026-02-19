@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/utils.ts"],
+  "sourcesContent": ["import { deepEqual } from 'fast-equals'\nimport core, { Ref, TxOperations } from '@hcengineering/core'\nimport { PersonAccount } from '@hcengineering/contact'\n\nimport chunter, { DirectMessage } from '.'\n\n/**\n * @public\n */\nexport async function getDirectChannel (\n  client: TxOperations,\n  me: Ref<PersonAccount>,\n  employeeAccount: Ref<PersonAccount>\n): Promise<Ref<DirectMessage>> {\n  const accIds = [me, employeeAccount].sort()\n  const existingDms = await client.findAll(chunter.class.DirectMessage, {})\n  for (const dm of existingDms) {\n    if (deepEqual(dm.members, accIds)) {\n      return dm._id\n    }\n  }\n\n  return await client.createDoc(chunter.class.DirectMessage, core.space.Space, {\n    name: '',\n    description: '',\n    private: true,\n    archived: false,\n    members: accIds\n  })\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,yBAA0B;AAC1B,kBAAwC;AAGxC,eAAuC;AAKvC,eAAsB,iBACpB,QACA,IACA,iBAC6B;AAC7B,QAAM,SAAS,CAAC,IAAI,eAAe,EAAE,KAAK;AAC1C,QAAM,cAAc,MAAM,OAAO,QAAQ,SAAAA,QAAQ,MAAM,eAAe,CAAC,CAAC;AACxE,aAAW,MAAM,aAAa;AAC5B,YAAI,8BAAU,GAAG,SAAS,MAAM,GAAG;AACjC,aAAO,GAAG;AAAA,IACZ;AAAA,EACF;AAEA,SAAO,MAAM,OAAO,UAAU,SAAAA,QAAQ,MAAM,eAAe,YAAAC,QAAK,MAAM,OAAO;AAAA,IAC3E,MAAM;AAAA,IACN,aAAa;AAAA,IACb,SAAS;AAAA,IACT,UAAU;AAAA,IACV,SAAS;AAAA,EACX,CAAC;AACH;AApBsB;",
+  "names": ["chunter", "core"]
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/nodes/todo.ts"],
+  "sourcesContent": ["import { TaskItem } from '@tiptap/extension-task-item'\nimport { TaskList } from '@tiptap/extension-task-list'\n\nimport { getDataAttribute } from './utils'\n\nexport const TodoItemNode = TaskItem.extend({\n  name: 'todoItem',\n\n  addOptions () {\n    return {\n      nested: true,\n      HTMLAttributes: {},\n      taskListTypeName: 'todoList'\n    }\n  },\n\n  addAttributes () {\n    return {\n      ...this.parent?.(),\n      todoid: getDataAttribute('todoid', { default: null, keepOnSplit: false }),\n      userid: getDataAttribute('userid', { default: null, keepOnSplit: false })\n    }\n  }\n})\n\nexport const TodoListNode = TaskList.extend({\n  name: 'todoList',\n\n  addOptions () {\n    return {\n      itemTypeName: 'todoItem',\n      HTMLAttributes: {}\n    }\n  }\n})\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iCAAyB;AACzB,iCAAyB;AAEzB,mBAAiC;AAE1B,MAAM,eAAe,oCAAS,OAAO;AAAA,EAC1C,MAAM;AAAA,EAEN,aAAc;AACZ,WAAO;AAAA,MACL,QAAQ;AAAA,MACR,gBAAgB,CAAC;AAAA,MACjB,kBAAkB;AAAA,IACpB;AAAA,EACF;AAAA,EAEA,gBAAiB;AACf,WAAO;AAAA,MACL,GAAG,KAAK,SAAS;AAAA,MACjB,YAAQ,+BAAiB,UAAU,EAAE,SAAS,MAAM,aAAa,MAAM,CAAC;AAAA,MACxE,YAAQ,+BAAiB,UAAU,EAAE,SAAS,MAAM,aAAa,MAAM,CAAC;AAAA,IAC1E;AAAA,EACF;AACF,CAAC;AAEM,MAAM,eAAe,oCAAS,OAAO;AAAA,EAC1C,MAAM;AAAA,EAEN,aAAc;AACZ,WAAO;AAAA,MACL,cAAc;AAAA,MACd,gBAAgB,CAAC;AAAA,IACnB;AAAA,EACF;AACF,CAAC;",
+  "names": []
+}

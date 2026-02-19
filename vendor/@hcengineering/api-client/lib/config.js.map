@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/config.ts"],
+  "sourcesContent": ["//\n// Copyright \u00A9 2024 Hardcore Engineering Inc.\n//\n// Licensed under the Eclipse Public License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License. You may\n// obtain a copy of the License at https://www.eclipse.org/legal/epl-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n//\n// See the License for the specific language governing permissions and\n// limitations under the License.\n//\n\nimport { concatLink } from '@hcengineering/core'\n\nexport interface ServerConfig {\n  ACCOUNTS_URL: string\n  COLLABORATOR_URL: string\n  FILES_URL: string\n  UPLOAD_URL: string\n}\n\nexport async function loadServerConfig (url: string): Promise<ServerConfig> {\n  const configUrl = concatLink(url, '/config.json')\n  const res = await fetch(configUrl, { keepalive: true })\n  if (res.ok) {\n    return (await res.json()) as ServerConfig\n  }\n  throw new Error('Failed to fetch config')\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAeA,kBAA2B;AAS3B,eAAsB,iBAAkB,KAAoC;AAC1E,QAAM,gBAAY,wBAAW,KAAK,cAAc;AAChD,QAAM,MAAM,MAAM,MAAM,WAAW,EAAE,WAAW,KAAK,CAAC;AACtD,MAAI,IAAI,IAAI;AACV,WAAQ,MAAM,IAAI,KAAK;AAAA,EACzB;AACA,QAAM,IAAI,MAAM,wBAAwB;AAC1C;AAPsB;",
+  "names": []
+}

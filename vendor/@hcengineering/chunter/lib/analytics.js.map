@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/analytics.ts"],
+  "sourcesContent": ["export enum ChunterEvents {\n  MessageCreated = 'chunter.MessageCreated',\n  MessageEdited = 'chunter.MessageEdited'\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,gBAAL,kBAAKA,mBAAL;AACL,EAAAA,eAAA,oBAAiB;AACjB,EAAAA,eAAA,mBAAgB;AAFN,SAAAA;AAAA,GAAA;",
+  "names": ["ChunterEvents"]
+}

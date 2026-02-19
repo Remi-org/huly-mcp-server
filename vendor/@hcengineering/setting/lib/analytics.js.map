@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/analytics.ts"],
+  "sourcesContent": ["export enum SettingsEvents {\n  SelectWorkspace = 'settings.SelectWorkspace',\n  InviteToWorkspace = 'settings.InviteToWorkspace',\n  SignOut = 'settings.SignOut'\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,iBAAL,kBAAKA,oBAAL;AACL,EAAAA,gBAAA,qBAAkB;AAClB,EAAAA,gBAAA,uBAAoB;AACpB,EAAAA,gBAAA,aAAU;AAHA,SAAAA;AAAA,GAAA;",
+  "names": ["SettingsEvents"]
+}

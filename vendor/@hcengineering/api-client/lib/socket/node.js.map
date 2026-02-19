@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/socket/node.ts"],
+  "sourcesContent": ["//\n// Copyright \u00A9 2024 Hardcore Engineering Inc.\n//\n// Licensed under the Eclipse Public License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License. You may\n// obtain a copy of the License at https://www.eclipse.org/legal/epl-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n//\n// See the License for the specific language governing permissions and\n// limitations under the License.\n//\n\nimport { type ClientSocket, type ClientSocketFactory } from '@hcengineering/client'\n\n/** @public */\nexport const NodeWebSocketFactory: ClientSocketFactory = (url: string): ClientSocket => {\n  // We need to override default factory with 'ws' one.\n  // eslint-disable-next-line\n  const WebSocket = require('ws')\n  return new WebSocket(url) as ClientSocket\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAkBO,MAAM,uBAA4C,wBAAC,QAA8B;AAGtF,QAAM,YAAY,QAAQ,IAAI;AAC9B,SAAO,IAAI,UAAU,GAAG;AAC1B,GALyD;",
+  "names": []
+}

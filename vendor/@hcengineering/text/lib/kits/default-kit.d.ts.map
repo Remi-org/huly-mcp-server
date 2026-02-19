@@ -1,0 +1,1 @@
+{"version":3,"file":"default-kit.d.ts","sourceRoot":"","sources":["../../src/kits/default-kit.ts"],"names":[],"mappings":"AAeA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAA;AAExC,OAAO,EAAE,KAAK,EAAE,MAAM,2BAA2B,CAAA;AAMjD,MAAM,WAAW,iBAAiB;IAChC,OAAO,CAAC,EAAE;QACR,MAAM,CAAC,EAAE,KAAK,EAAE,CAAA;KACjB,CAAA;IACD,OAAO,CAAC,EAAE,KAAK,CAAA;CAChB;AAED,eAAO,MAAM,UAAU,mCAgCrB,CAAA"}

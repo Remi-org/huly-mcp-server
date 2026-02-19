@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/analytics.ts"],
+  "sourcesContent": ["export enum TagsEvents {\n  TagCreated = 'tags.TagCreated',\n  TagRemoved = 'tags.TagRemoved'\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,aAAL,kBAAKA,gBAAL;AACL,EAAAA,YAAA,gBAAa;AACb,EAAAA,YAAA,gBAAa;AAFH,SAAAA;AAAA,GAAA;",
+  "names": ["TagsEvents"]
+}

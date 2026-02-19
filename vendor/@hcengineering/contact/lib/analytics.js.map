@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/analytics.ts"],
+  "sourcesContent": ["export enum ContactEvents {\n  EmployeeCreated = 'contact.employee.Created',\n  PersonCreated = 'contact.person.Created',\n  CompanyCreated = 'contact.company.Created'\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,gBAAL,kBAAKA,mBAAL;AACL,EAAAA,eAAA,qBAAkB;AAClB,EAAAA,eAAA,mBAAgB;AAChB,EAAAA,eAAA,oBAAiB;AAHP,SAAAA;AAAA,GAAA;",
+  "names": ["ContactEvents"]
+}

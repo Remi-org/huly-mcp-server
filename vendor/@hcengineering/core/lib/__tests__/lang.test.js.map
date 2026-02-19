@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/__tests__/lang.test.ts"],
+  "sourcesContent": ["import { makeLocalesTest } from '@hcengineering/platform'\n\nit(\n  'Locales are equale',\n  makeLocalesTest((lang) => import(`../../lang/${lang}.json`))\n)\n"],
+  "mappings": ";AAAA,sBAAgC;AAEhC;AAAA,EACE;AAAA,MACA,iCAAgB,CAAC,SAAS,OAAO,cAAc,IAAI,QAAQ;AAC7D;",
+  "names": []
+}

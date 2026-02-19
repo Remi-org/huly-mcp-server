@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/analytics.ts"],
+  "sourcesContent": ["export enum TimeEvents {\n  TeamOpenTab = 'time.team.OpenTab',\n  ToDoCreated = 'time.todo.Created',\n  ToDoScheduled = 'time.todo.Scheduled'\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,aAAL,kBAAKA,gBAAL;AACL,EAAAA,YAAA,iBAAc;AACd,EAAAA,YAAA,iBAAc;AACd,EAAAA,YAAA,mBAAgB;AAHN,SAAAA;AAAA,GAAA;",
+  "names": ["TimeEvents"]
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/marks/nodeUuid.ts"],
+  "sourcesContent": ["import { Mark } from '@tiptap/core'\n\nconst NAME = 'node-uuid'\n\n/**\n * @public\n */\nexport const NodeUuid = Mark.create({\n  name: NAME,\n  inline: true,\n\n  parseHTML () {\n    return [\n      {\n        tag: `span[${NAME}]`\n      }\n    ]\n  },\n\n  renderHTML ({ HTMLAttributes }) {\n    return ['span', HTMLAttributes, 0]\n  }\n})\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,kBAAqB;AAErB,MAAM,OAAO;AAKN,MAAM,WAAW,iBAAK,OAAO;AAAA,EAClC,MAAM;AAAA,EACN,QAAQ;AAAA,EAER,YAAa;AACX,WAAO;AAAA,MACL;AAAA,QACE,KAAK,QAAQ,IAAI;AAAA,MACnB;AAAA,IACF;AAAA,EACF;AAAA,EAEA,WAAY,EAAE,eAAe,GAAG;AAC9B,WAAO,CAAC,QAAQ,gBAAgB,CAAC;AAAA,EACnC;AACF,CAAC;",
+  "names": []
+}

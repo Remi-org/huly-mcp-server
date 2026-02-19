@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/analytics.ts"],
+  "sourcesContent": ["export enum AttachmentsEvents {\n  FilesAttached = 'attachment.FilesAttached'\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,oBAAL,kBAAKA,uBAAL;AACL,EAAAA,mBAAA,mBAAgB;AADN,SAAAA;AAAA,GAAA;",
+  "names": ["AttachmentsEvents"]
+}

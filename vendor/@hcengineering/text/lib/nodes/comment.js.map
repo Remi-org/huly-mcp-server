@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/nodes/comment.ts"],
+  "sourcesContent": ["//\n// Copyright \u00A9 2024 Hardcore Engineering Inc.\n//\n// Licensed under the Eclipse Public License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License. You may\n// obtain a copy of the License at https://www.eclipse.org/legal/epl-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n//\n// See the License for the specific language governing permissions and\n// limitations under the License.\n//\n\nimport { Node } from '@tiptap/core'\n\n/**\n * @public\n */\nexport const CommentNode = Node.create({\n  name: 'comment',\n  group: 'inline',\n  inline: true,\n  content: 'text*',\n  marks: '_',\n\n  parseHTML () {\n    return [\n      {\n        tag: 'comment'\n      }\n    ]\n  },\n\n  renderText () {\n    return ''\n  }\n})\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAeA,kBAAqB;AAKd,MAAM,cAAc,iBAAK,OAAO;AAAA,EACrC,MAAM;AAAA,EACN,OAAO;AAAA,EACP,QAAQ;AAAA,EACR,SAAS;AAAA,EACT,OAAO;AAAA,EAEP,YAAa;AACX,WAAO;AAAA,MACL;AAAA,QACE,KAAK;AAAA,MACP;AAAA,IACF;AAAA,EACF;AAAA,EAEA,aAAc;AACZ,WAAO;AAAA,EACT;AACF,CAAC;",
+  "names": []
+}

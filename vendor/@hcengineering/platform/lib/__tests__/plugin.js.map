@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/__tests__/plugin.ts"],
+  "sourcesContent": ["//\n// Copyright \u00A9 2020 Anticrm Platform Contributors.\n//\n// Licensed under the Eclipse Public License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License. You may\n// obtain a copy of the License at https://www.eclipse.org/legal/epl-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n//\n// See the License for the specific language governing permissions and\n// limitations under the License.\n//\n\n// eslint-disable-next-line @typescript-eslint/explicit-function-return-type\nexport default async () => ({\n  test: {\n    X: 'Test'\n  }\n})\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAgBA,IAAO,iBAAQ,oCAAa;AAAA,EAC1B,MAAM;AAAA,IACJ,GAAG;AAAA,EACL;AACF,IAJe;",
+  "names": []
+}

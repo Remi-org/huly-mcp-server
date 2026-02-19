@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/analytics.ts"],
+  "sourcesContent": ["export enum WorkbenchEvents {\n  DocumentationOpened = 'workbench.help.DocumentationOpened',\n  KeyboardShortcutsOpened = 'workbench.help.KeyboardShortcutsOpened',\n  SidebarCloseWidget = 'workbench.sidebar.CloseWidget',\n  SidebarOpenWidget = 'workbench.sidebar.OpenWidget'\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAK,kBAAL,kBAAKA,qBAAL;AACL,EAAAA,iBAAA,yBAAsB;AACtB,EAAAA,iBAAA,6BAA0B;AAC1B,EAAAA,iBAAA,wBAAqB;AACrB,EAAAA,iBAAA,uBAAoB;AAJV,SAAAA;AAAA,GAAA;",
+  "names": ["WorkbenchEvents"]
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/benchmark.ts"],
+  "sourcesContent": ["import { Doc, type Domain } from './classes'\n\n/**\n * @public\n */\nexport const DOMAIN_BENCHMARK = 'benchmark' as Domain\n\nexport type BenchmarkDocRange =\n  | number\n  | {\n    // Or random in range\n    from: number\n    to: number\n  }\nexport interface BenchmarkDoc extends Doc {\n  source?: string\n  // Query fields to perform different set of workload\n  request?: {\n    // On response will return a set of BenchmarkDoc with requested fields.\n    documents: BenchmarkDocRange\n\n    // A random sized document with size from to sizeTo\n    size: BenchmarkDocRange\n\n    // Produce a set of derived documents payload\n    derived?: BenchmarkDocRange\n  }\n  response?: string // A dummy random data to match document's size\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAKO,MAAM,mBAAmB;",
+  "names": []
+}

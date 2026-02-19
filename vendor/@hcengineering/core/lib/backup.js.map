@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/backup.ts"],
+  "sourcesContent": ["import { Doc, Domain, Ref } from './classes'\nimport { DocInfo } from './server'\n\n/**\n * @public\n * Define a st of document + hashcode for chunk\n * So backup client could decide to download or not any of documents.\n */\nexport interface DocChunk {\n  idx: number\n  // _id => hash mapping\n  docs: DocInfo[]\n\n  size?: number // Estimated size of the chunk data\n  finished: boolean\n}\n\n/**\n * @public\n */\nexport interface BackupClient {\n  loadChunk: (domain: Domain, idx?: number) => Promise<DocChunk>\n  closeChunk: (idx: number) => Promise<void>\n\n  loadDocs: (domain: Domain, docs: Ref<Doc>[]) => Promise<Doc[]>\n  upload: (domain: Domain, docs: Doc[]) => Promise<void>\n  clean: (domain: Domain, docs: Ref<Doc>[]) => Promise<void>\n\n  getDomainHash: (domain: Domain) => Promise<string>\n\n  sendForceClose: () => Promise<void>\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

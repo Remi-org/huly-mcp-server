@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/markdown/node.ts"],
+  "sourcesContent": ["import { Attrs, MarkupNode } from '@hcengineering/text-core'\n\nexport function traverseMarkupNode (node: MarkupNode, f: (el: MarkupNode) => void): void {\n  f(node)\n  node.content?.forEach((c) => {\n    traverseMarkupNode(c, f)\n  })\n}\n\nexport function messageContent (node: MarkupNode): MarkupNode[] {\n  return node?.content ?? []\n}\n\nexport function nodeAttrs (node: MarkupNode): Attrs {\n  return node.attrs ?? {}\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,SAAS,mBAAoB,MAAkB,GAAmC;AACvF,IAAE,IAAI;AACN,OAAK,SAAS,QAAQ,CAAC,MAAM;AAC3B,uBAAmB,GAAG,CAAC;AAAA,EACzB,CAAC;AACH;AALgB;AAOT,SAAS,eAAgB,MAAgC;AAC9D,SAAO,MAAM,WAAW,CAAC;AAC3B;AAFgB;AAIT,SAAS,UAAW,MAAyB;AAClD,SAAO,KAAK,SAAS,CAAC;AACxB;AAFgB;",
+  "names": []
+}

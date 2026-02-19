@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/testUtils.ts"],
+  "sourcesContent": ["import { Loader } from './i18n'\n\nfunction makeLocaleMatcher (target: object): object {\n  return Object.entries(target).reduce(\n    (obj, [key, value]) => ({\n      ...obj,\n      [key]: typeof value === 'string' ? expect.any(String) : makeLocaleMatcher(value)\n    }),\n    {}\n  )\n}\n\nconst langs = ['en', 'ru']\n\n/**\n * @public\n * @param loader -\n * @returns\n */\nexport function makeLocalesTest (loader: Loader) {\n  return async () => {\n    const [target, ...rest] = await Promise.all(langs.map(loader))\n    const matcher = makeLocaleMatcher(target)\n    rest.forEach((loc) => {\n      expect(loc).toEqual(matcher)\n    })\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEA,SAAS,kBAAmB,QAAwB;AAClD,SAAO,OAAO,QAAQ,MAAM,EAAE;AAAA,IAC5B,CAAC,KAAK,CAAC,KAAK,KAAK,OAAO;AAAA,MACtB,GAAG;AAAA,MACH,CAAC,GAAG,GAAG,OAAO,UAAU,WAAW,OAAO,IAAI,MAAM,IAAI,kBAAkB,KAAK;AAAA,IACjF;AAAA,IACA,CAAC;AAAA,EACH;AACF;AARS;AAUT,MAAM,QAAQ,CAAC,MAAM,IAAI;AAOlB,SAAS,gBAAiB,QAAgB;AAC/C,SAAO,YAAY;AACjB,UAAM,CAAC,QAAQ,GAAG,IAAI,IAAI,MAAM,QAAQ,IAAI,MAAM,IAAI,MAAM,CAAC;AAC7D,UAAM,UAAU,kBAAkB,MAAM;AACxC,SAAK,QAAQ,CAAC,QAAQ;AACpB,aAAO,GAAG,EAAE,QAAQ,OAAO;AAAA,IAC7B,CAAC;AAAA,EACH;AACF;AARgB;",
+  "names": []
+}
