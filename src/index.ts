@@ -32,6 +32,8 @@ import { errorResponse, successResponse } from './error-handler'
 import { allDefinitions, allHandlers } from './tools'
 
 export interface RequestCredentials {
+  url: string
+  workspace: string
   email: string
   password: string
 }
@@ -48,12 +50,12 @@ const server = new Server(
 const clientCache = new Map<string, { client: any; lastUsed: number }>()
 const CLIENT_TTL = 5 * 60 * 1000
 
-function clientCacheKey(email: string): string {
-  return `${email}:${config.hulyWorkspace}`
+function clientCacheKey(creds: RequestCredentials): string {
+  return `${creds.url}:${creds.email}:${creds.workspace}`
 }
 
-async function getClient(credentials: RequestCredentials, retries = 3): Promise<any> {
-  const key = clientCacheKey(credentials.email)
+async function getClient(creds: RequestCredentials, retries = 3): Promise<any> {
+  const key = clientCacheKey(creds)
   const cached = clientCache.get(key)
 
   if (cached) {
@@ -62,18 +64,18 @@ async function getClient(credentials: RequestCredentials, retries = 3): Promise<
   }
 
   const options: ConnectOptions = {
-    email: credentials.email,
-    password: credentials.password,
-    workspace: config.hulyWorkspace,
+    email: creds.email,
+    password: creds.password,
+    workspace: creds.workspace,
     socketFactory: NodeWebSocketFactory,
     connectionTimeout: 30000,
   }
 
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      logger.info('Connecting to Huly', { url: config.hulyUrl, workspace: config.hulyWorkspace, email: credentials.email, attempt })
-      const hulyClient = await connect(config.hulyUrl, options)
-      logger.info('Connected to Huly', { email: credentials.email })
+      logger.info('Connecting to Huly', { url: creds.url, workspace: creds.workspace, email: creds.email, attempt })
+      const hulyClient = await connect(creds.url, options)
+      logger.info('Connected to Huly', { email: creds.email })
       clientCache.set(key, { client: hulyClient, lastUsed: Date.now() })
       return hulyClient
     } catch (error) {
@@ -102,8 +104,8 @@ function extractCredentials(req: IncomingMessage): RequestCredentials | null {
   if (!header) return null
   try {
     const parsed = JSON.parse(typeof header === 'string' ? header : header[0])
-    if (parsed.email && parsed.password) {
-      return { email: parsed.email, password: parsed.password }
+    if (parsed.url && parsed.workspace && parsed.email && parsed.password) {
+      return { url: parsed.url, workspace: parsed.workspace, email: parsed.email, password: parsed.password }
     }
     return null
   } catch {
@@ -124,19 +126,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 
   try {
-    const credentials = credentialStore.getStore()
-    if (!credentials) {
-      return errorResponse(new Error('No credentials provided. Send X-Remi-Credentials header.'))
+    const creds = credentialStore.getStore()
+    if (!creds) {
+      return errorResponse(new Error('No credentials provided. Send X-Remi-Credentials header with url, workspace, email, password.'))
     }
 
-    const hulyClient = await getClient(credentials)
+    const hulyClient = await getClient(creds)
     const result = await handler(hulyClient, args || {})
     return successResponse(result)
   } catch (error) {
     if (error instanceof Error && error.message.includes('ECONNR')) {
-      const credentials = credentialStore.getStore()
-      if (credentials) {
-        clientCache.delete(clientCacheKey(credentials.email))
+      const creds = credentialStore.getStore()
+      if (creds) {
+        clientCache.delete(clientCacheKey(creds))
       }
     }
     logger.error('Tool execution failed', { tool: name, error: String(error) })
@@ -145,10 +147,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 })
 
 async function main() {
-  const mode = process.env.MCP_TRANSPORT || 'stdio'
-
-  if (mode === 'http') {
-    const port = parseInt(process.env.MCP_HTTP_PORT || '3001', 10)
+  if (config.transport === 'http') {
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
 
     const httpServer = createServer(async (req, res) => {
@@ -158,13 +157,13 @@ async function main() {
         return
       }
       if (req.url === '/mcp') {
-        const credentials = extractCredentials(req)
-        if (!credentials) {
+        const creds = extractCredentials(req)
+        if (!creds) {
           res.writeHead(401, { 'Content-Type': 'application/json' })
-          res.end(JSON.stringify({ error: 'Missing or invalid X-Remi-Credentials header' }))
+          res.end(JSON.stringify({ error: 'Missing or invalid X-Remi-Credentials header. Required: url, workspace, email, password.' }))
           return
         }
-        credentialStore.run(credentials, () => {
+        credentialStore.run(creds, () => {
           transport.handleRequest(req, res)
         })
         return
@@ -174,8 +173,8 @@ async function main() {
     })
 
     await server.connect(transport)
-    httpServer.listen(port, () => {
-      logger.info(`Huly MCP server running on http://0.0.0.0:${port}/mcp`)
+    httpServer.listen(config.httpPort, () => {
+      logger.info(`Huly MCP server running on http://0.0.0.0:${config.httpPort}/mcp`)
     })
   } else {
     const transport = new StdioServerTransport()

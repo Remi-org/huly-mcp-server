@@ -1,24 +1,11 @@
-import { z } from 'zod'
+export interface ServerConfig {
+  transport: 'stdio' | 'http'
+  httpPort: number
+}
 
-const configSchema = z.object({
-  hulyUrl: z.string().url(),
-  hulyWorkspace: z.string().min(1),
-})
-
-export type Config = z.infer<typeof configSchema>
-
-export function loadConfig(): Config {
-  const result = configSchema.safeParse({
-    hulyUrl: process.env.HULY_URL,
-    hulyWorkspace: process.env.HULY_WORKSPACE,
-  })
-
-  if (!result.success) {
-    const missing = result.error.issues
-      .map((i) => `  ${i.path.join('.')}: ${i.message}`)
-      .join('\n')
-    throw new Error(`Invalid configuration:\n${missing}`)
+export function loadConfig(): ServerConfig {
+  return {
+    transport: (process.env.MCP_TRANSPORT as 'stdio' | 'http') || 'stdio',
+    httpPort: parseInt(process.env.MCP_HTTP_PORT || '3001', 10),
   }
-
-  return result.data
 }
