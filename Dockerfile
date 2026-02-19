@@ -7,8 +7,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM deps
-COPY tsconfig.json ./
-COPY src/ ./src/
+COPY --chown=node:node tsconfig.json ./
+COPY --chown=node:node src/ ./src/
 
 ENV MCP_TRANSPORT=http
 ENV MCP_HTTP_PORT=3001
