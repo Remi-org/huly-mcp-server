@@ -117,6 +117,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: allDefinitions,
 }))
 
+function getEnvCredentials(): RequestCredentials | null {
+  const url = process.env.HULY_URL
+  const workspace = process.env.HULY_WORKSPACE
+  const email = process.env.HULY_EMAIL
+  const password = process.env.HULY_PASSWORD
+  if (url && workspace && email && password) {
+    return { url, workspace, email, password }
+  }
+  return null
+}
+
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
 
@@ -126,9 +137,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 
   try {
-    const creds = credentialStore.getStore()
+    const creds = credentialStore.getStore() || getEnvCredentials()
     if (!creds) {
-      return errorResponse(new Error('No credentials provided. Send X-Remi-Credentials header with url, workspace, email, password.'))
+      return errorResponse(new Error('No credentials provided. Set HULY_URL, HULY_WORKSPACE, HULY_EMAIL, HULY_PASSWORD env vars, or send X-Remi-Credentials header.'))
     }
 
     const hulyClient = await getClient(creds)
