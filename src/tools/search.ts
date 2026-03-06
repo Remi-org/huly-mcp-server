@@ -1,11 +1,11 @@
 import { z } from 'zod'
-import core from '@hcengineering/core'
+import tracker from '@hcengineering/tracker'
 import type { ToolDefinition, ToolHandler } from '../types'
 
 export const definitions: ToolDefinition[] = [
   {
     name: 'fulltext_search',
-    description: 'Search across all documents, issues, and objects by text query',
+    description: 'Search issues by text query across titles and descriptions',
     inputSchema: {
       type: 'object',
       properties: {
@@ -24,7 +24,7 @@ const fulltextSearch: ToolHandler = async (client, args) => {
   }).parse(args)
 
   const results = await client.findAll(
-    core.class.Doc,
+    tracker.class.Issue,
     { $search: input.query },
     { limit: input.limit || 50 }
   )
@@ -32,6 +32,8 @@ const fulltextSearch: ToolHandler = async (client, args) => {
   return results.map((r: any) => ({
     id: r._id,
     _class: r._class,
+    identifier: r.identifier,
+    title: r.title,
     space: r.space,
     modifiedOn: r.modifiedOn,
   }))

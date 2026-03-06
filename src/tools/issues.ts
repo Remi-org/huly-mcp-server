@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import tracker, { IssuePriority } from '@hcengineering/tracker'
-import core, { generateId, Ref, Class, Doc } from '@hcengineering/core'
+import { generateId, Ref, Class, Doc } from '@hcengineering/core'
 import { makeRank } from '@hcengineering/rank'
 import { NotFoundError } from '../errors'
 import type { ToolDefinition, ToolHandler } from '../types'
@@ -35,11 +35,11 @@ export const definitions: ToolDefinition[] = [
   },
   {
     name: 'get_issue',
-    description: 'Get full details of a specific issue by ID',
+    description: 'Get full details of a specific issue by ID or identifier (e.g. REM-69)',
     inputSchema: {
       type: 'object',
       properties: {
-        issueId: { type: 'string', description: 'Issue ID to retrieve' },
+        issueId: { type: 'string', description: 'Issue ID or identifier (e.g. REM-69) to retrieve' },
       },
       required: ['issueId'],
     },
@@ -258,13 +258,26 @@ const listIssues: ToolHandler = async (client, args) => {
 const getIssue: ToolHandler = async (client, args) => {
   const { issueId } = z.object({ issueId: z.string() }).parse(args)
 
-  const issue = await client.findOne(tracker.class.Issue, { _id: issueId })
+  let issue = await client.findOne(tracker.class.Issue, { _id: issueId })
+
+  if (!issue) {
+    issue = await client.findOne(tracker.class.Issue, { identifier: issueId })
+  }
+
+  if (!issue && /^[A-Z]+-\d+$/i.test(issueId)) {
+    const [prefix, num] = issueId.split('-')
+    const project = await client.findOne(tracker.class.Project, { identifier: prefix.toUpperCase() })
+    if (project) {
+      issue = await client.findOne(tracker.class.Issue, { space: project._id, number: parseInt(num, 10) })
+    }
+  }
+
   if (!issue) throw new NotFoundError('Issue', issueId)
 
   if (issue.description && client.markup?.fetchMarkup) {
     try {
       issue.descriptionContent = await client.markup.fetchMarkup(
-        tracker.class.Issue, issueId, 'description', issue.description, 'markdown'
+        tracker.class.Issue, issue._id, 'description', issue.description, 'markdown'
       )
     } catch (e) {
       issue.descriptionContent = `[Error fetching description: ${e}]`
@@ -291,15 +304,10 @@ const createIssue: ToolHandler = async (client, args) => {
 
   const issueId = generateId()
 
-  const seqResult = await client.updateDoc(
-    tracker.class.Project, core.space.Space, project._id,
-    { $inc: { sequence: 1 } }, true
-  )
-  const number = (seqResult as any).object.sequence
-
   const lastIssue = await client.findOne(
-    tracker.class.Issue, { space: project._id }, { sort: { rank: -1 } }
+    tracker.class.Issue, { space: project._id }, { sort: { number: -1 } }
   )
+  const number = (lastIssue?.number ?? 0) + 1
 
   const descriptionMarkup = input.description
     ? await client.uploadMarkup(

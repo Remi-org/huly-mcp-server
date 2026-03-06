@@ -68,7 +68,7 @@ class PlatformClientImpl {
     this.config = config;
     this.connection = connection;
     this.account = account;
-    this.client = new import_core.TxOperations(connection, account._id);
+    this.client = new import_core.TxOperations(connection, account.primarySocialId || account._id);
     this.markup = (0, import_markup.createMarkupOperations)(url, workspace, token, config);
   }
   static {
@@ -178,7 +178,7 @@ async function getWorkspaceToken(url, options, config) {
   if (ws === void 0) {
     throw new Error("Workspace not found");
   }
-  return { endpoint: ws.endpoint, token: ws.token, workspaceId: ws.workspaceId };
+  return { endpoint: ws.endpoint, token: ws.token, workspaceId: ws.workspace ?? ws.workspaceId };
 }
 __name(getWorkspaceToken, "getWorkspaceToken");
 //# sourceMappingURL=client.js.map

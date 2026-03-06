@@ -31,7 +31,7 @@ async function login(accountsUrl, user, password, workspace) {
     },
     body: JSON.stringify({
       method: "login",
-      params: [user, password, workspace]
+      params: { email: user, password }
     })
   });
   const result = await response.json();

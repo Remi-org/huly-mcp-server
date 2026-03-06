@@ -1,9 +1,6 @@
 import { z } from 'zod'
 import { Ref, Class, Doc } from '@hcengineering/core'
-import { NotFoundError } from '../errors'
 import type { ToolDefinition, ToolHandler } from '../types'
-
-const ACCOUNT_CLASS = 'core:class:Account' as Ref<Class<Doc>>
 
 export const definitions: ToolDefinition[] = [
   {
@@ -93,11 +90,11 @@ export const definitions: ToolDefinition[] = [
 ]
 
 const listWorkspaceMembers: ToolHandler = async (client) => {
-  const accounts = await client.findAll(ACCOUNT_CLASS, {})
-  return accounts.map((a: any) => ({
-    id: a._id,
-    email: a.email,
-    role: a.role,
+  const members = await client.findAll('contact:class:Employee' as Ref<Class<Doc>>, { active: true })
+  return members.map((m: any) => ({
+    id: m._id,
+    name: m.name,
+    active: m.active,
   }))
 }
 
@@ -107,11 +104,7 @@ const updateMemberRole: ToolHandler = async (client, args) => {
     role: z.enum(['GUEST', 'USER', 'MAINTAINER', 'OWNER']),
   }).parse(args)
 
-  const account = await client.findOne(ACCOUNT_CLASS, { _id: input.accountId })
-  if (!account) throw new NotFoundError('Account', input.accountId)
-
-  await client.updateDoc(ACCOUNT_CLASS, account.space, input.accountId, { role: input.role })
-  return { success: true, message: `Updated role to ${input.role}` }
+  return { success: false, message: 'Role management is handled by the accounts service in v7' }
 }
 
 const getWorkspaceInfo: ToolHandler = async (client) => {
