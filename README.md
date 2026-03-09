@@ -1,6 +1,16 @@
-# huly-mcp-server
+<p align="center">
+  <img src=".github/logo.svg" alt="Remi" width="120">
+</p>
 
-MCP server for Huly workspace management. Exposes 116 tools for project management, documents, cards, messaging, calendar, and more through the [Model Context Protocol](https://modelcontextprotocol.io/).
+<h1 align="center">Huly MCP Server</h1>
+
+<p align="center">
+  <a href="https://modelcontextprotocol.io/">Model Context Protocol</a> server for <a href="https://huly.io">Huly</a> workspace management.<br>
+  116 tools for project management, documents, cards, messaging, calendar, and more.<br>
+  Built for <a href="https://remiapp.ai">Remi</a>.
+</p>
+
+---
 
 ## Requirements
 
@@ -223,3 +233,9 @@ pnpm test:coverage
 ## License
 
 ISC
+
+---
+
+<p align="center">
+  <a href="https://remiapp.ai">remiapp.ai</a>
+</p>
