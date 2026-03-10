@@ -47,7 +47,7 @@ async function selectWorkspace(accountsUrl, token, workspace) {
     },
     body: JSON.stringify({
       method: "selectWorkspace",
-      params: [workspace, "external"]
+      params: { workspaceUrl: workspace, kind: "external" }
     })
   });
   const result = await response.json();
