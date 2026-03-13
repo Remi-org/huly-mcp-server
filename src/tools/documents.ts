@@ -82,6 +82,18 @@ export const definitions: ToolDefinition[] = [
       required: ['documentId'],
     },
   },
+  {
+    name: 'move_document',
+    description: 'Move a document to a different teamspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        documentId: { type: 'string', description: 'Document ID to move' },
+        targetTeamspaceId: { type: 'string', description: 'Target teamspace ID' },
+      },
+      required: ['documentId', 'targetTeamspaceId'],
+    },
+  },
 ]
 
 const listTeamspaces: ToolHandler = async (client) => {
@@ -338,6 +350,39 @@ const deleteDocument: ToolHandler = async (client, args) => {
   return { success: true, documentId, message: `Deleted document ${document.title}` }
 }
 
+const moveDocument: ToolHandler = async (client, args) => {
+  const input = z.object({
+    documentId: z.string(),
+    targetTeamspaceId: z.string(),
+  }).parse(args)
+
+  const document = await client.findOne(DOCUMENT_CLASS, { _id: input.documentId })
+  if (!document) throw new NotFoundError('Document', input.documentId)
+
+  if (document.space === input.targetTeamspaceId) {
+    return { success: true, documentId: input.documentId, message: `Document already in target teamspace` }
+  }
+
+  const target = await client.findOne(TEAMSPACE_CLASS, { _id: input.targetTeamspaceId })
+  if (!target) throw new NotFoundError('Teamspace', input.targetTeamspaceId)
+
+  await client.updateDoc(DOCUMENT_CLASS, document.space, input.documentId, { space: input.targetTeamspaceId } as any)
+
+  const moved = await client.findOne(DOCUMENT_CLASS, { _id: input.documentId })
+  const success = moved?.space === input.targetTeamspaceId
+
+  return {
+    success,
+    documentId: input.documentId,
+    from: document.space,
+    to: moved?.space,
+    title: (document as any).title,
+    message: success
+      ? `Moved "${(document as any).title}" to ${(target as any).name}`
+      : `Move failed — document still in original space`,
+  }
+}
+
 export const handlers: Record<string, ToolHandler> = {
   list_teamspaces: listTeamspaces,
   list_documents: listDocuments,
@@ -346,4 +391,5 @@ export const handlers: Record<string, ToolHandler> = {
   create_document: createDocument,
   update_document: updateDocument,
   delete_document: deleteDocument,
+  move_document: moveDocument,
 }
