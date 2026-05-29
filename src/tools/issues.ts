@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import tracker, { IssuePriority } from '@hcengineering/tracker'
-import { generateId, Ref, Class, Doc } from '@hcengineering/core'
+import core, { generateId, Ref, Class, Doc } from '@hcengineering/core'
 import { makeRank } from '@hcengineering/rank'
 import { NotFoundError } from '../errors'
 import type { ToolDefinition, ToolHandler } from '../types'
@@ -304,10 +304,21 @@ const createIssue: ToolHandler = async (client, args) => {
 
   const issueId = generateId()
 
-  const lastIssue = await client.findOne(
-    tracker.class.Issue, { space: project._id }, { sort: { number: -1 } }
+  // Allocate via atomic $inc on Project.sequence — the canonical counter the
+  // Huly UI uses. Any other allocation strategy will drift relative to it and
+  // produce duplicate identifiers.
+  const incResult: any = await client.updateDoc(
+    tracker.class.Project,
+    core.space.Space,
+    project._id,
+    { $inc: { sequence: 1 } },
+    true
   )
-  const number = (lastIssue?.number ?? 0) + 1
+  const number = incResult?.object?.sequence as number
+
+  const lastIssue = await client.findOne(
+    tracker.class.Issue, { space: project._id }, { sort: { rank: -1 } }
+  )
 
   const descriptionMarkup = input.description
     ? await client.uploadMarkup(
